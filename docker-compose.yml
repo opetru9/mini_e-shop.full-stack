@@ -1,0 +1,19 @@
+version: '1.0.0'
+
+services:
+    db:
+        image: postgres
+        restart: always
+        shm_size: 256mb
+
+        volumes:
+            - "./data:/var/lib/postgresql/data"
+        ports:
+            - "5434:5432"
+        
+        environment: 
+            POSTGRES_DB: node_landing_db
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: qazwsx
+
+        
