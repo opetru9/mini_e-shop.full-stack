@@ -5,7 +5,11 @@ INSERT INTO products VALUES (
     '',
     100,
     'USD',
+    80
 );
 
-UPDATE products
-SET price_discount_amount = 80;
+
+-- UPDATE products
+-- SET price_discount_amount = 80;
+-- UPDATE products
+-- SET price_discount_currency = 'USD';
