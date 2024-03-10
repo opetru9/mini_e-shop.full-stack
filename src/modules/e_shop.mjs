@@ -1,4 +1,5 @@
 import { Product } from './Poduct.mjs';
+import { Order } from './Order.mjs';
 import { Client } from './Client.mjs';
 import { StandartPrice, DiscountPrice } from './Money.mjs'
 import { dbConnect } from "./db.mjs";
@@ -25,28 +26,101 @@ async function getProductById(id){
     return product1
 }
 
-async function addClient(id, fullName, email, phone){
+async function addClient( fullName, email, phone ){
 
-    try {
-        const setClientDB = await sql`
-            INSERT INTO clients (id, full_name, email, phone)
-            VALUES (${id}, ${fullName}, ${email}, ${phone});`;
-
-        const client_data = new Client(id, fullName, email, phone);
-        
-        return client_data;
-        
-    } catch (error) {
-        if (error.code === '23505') {
-            let existentClient =  await sql`SELECT * FROM clients WHERE id=${id}`
-            console.log(existentClient)
-            
-            throw new Error(`Sorry, there is already a client with id = ${id} in our DB`);
-        } else {
-            throw error;
-        }
-    }
-    }
+    const client = new Client(null, fullName, email, phone);
     
-    export {getProductById, addClient}
+    const clientData = await sql`
+        INSERT INTO clients (full_name, email, phone)
+        VALUES (${client.fullName}, ${client.email}, ${client.phone})
+        RETURNING id`;
+
+    client.id = clientData[0].id
+
+    return client
+        
+}   
+
+async function getClientById(id){
+    const clients = await sql`SELECT * FROM clients WHERE id=${id}`
+    const clientData  = clients[0]
+
+    const client = new Client(   
+        clientData.id, 
+        clientData.full_name, 
+        clientData.email, 
+        clientData.phone,
+    )
+
+    return client
+}
+
+async function getClientByEmailOrPhone(emailOrPhone) {
+    let clients = [];
+
+    if (emailOrPhone.includes('@')) {
+        clients = await sql`SELECT * FROM clients WHERE email=${emailOrPhone}`;
+    } else {
+        clients = await sql`SELECT * FROM clients WHERE phone=${emailOrPhone}`;
+    }
+
+    if (clients.length > 0) {
+        const clientData = clients[0];
+        const client = new Client(
+            clientData.id,
+            clientData.full_name,
+            clientData.email,
+            clientData.phone
+        );
+
+        return client;
+
+    } else {
+        return null; 
+    }
+}
+
+async function placeOrder(client, product, quantity){
+    let order = new Order(  
+        null, 
+        client, 
+        product, 
+        quantity,
+        new Date(),
+        null,
+        new StandartPrice(product.standartPrice.amount * quantity,
+                   product.standartPrice.currency ),
+        new DiscountPrice(product.discountPrice.amount * quantity,
+                   product.discountPrice.currency ),
+        );
+    
+        const orderData = await sql`
+            INSERT INTO orders (
+                product_id,
+                quantity,
+                client_id,
+                placed_on,
+                completed_on,
+                const_standart_amount,
+                const_standart_currency,
+                const_discount_amount,
+                const_discount_currency
+            )VALUES (
+                ${order.product.id},
+                ${order.quantity},
+                ${order.client.id},
+                ${order.placed},
+                ${order.completedOn},
+                ${order.product.standartPrice.amount},
+                ${order.product.standartPrice.currency},
+                ${order.product.discountPrice.amount},
+                ${order.product.discountPrice.currency}
+            )
+            RETURNING id`;
+    order.id = orderData[0].id
+
+    return order
+}
+    
+    export {getProductById, addClient, placeOrder, getClientById, getClientByEmailOrPhone}
     

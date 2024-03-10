@@ -22,11 +22,14 @@ CREATE TABLE clients(
 CREATE TABLE orders(
     id SERIAL PRIMARY KEY,
     product_id int not null,
+    quantity int not null,  
     client_id int not null,
     placed_on timestamptz,
     completed_on timestamptz,
-    const_amount int not null,
-    const_currency varchar(4) not null,
+    const_standart_amount int not null,
+    const_standart_currency varchar(4) not null,
+    const_discount_amount int, 
+    const_discount_currency varchar(4) not null, 
     CONSTRAINT fk_oreders_product FOREIGN KEY (product_id) REFERENCES products (id),
     CONSTRAINT fk_oreders_clients FOREIGN KEY (client_id) REFERENCES clients (id)
 );
@@ -39,8 +42,10 @@ CREATE TABLE payments(
     remote_id varchar(100),
     completed_on timestamptz,
     state varchar(20) not null,
-    bill_amount int not null,
-    bill_currency varchar(4) not null
+    bill_standart_amount int not null,
+    bill_standart_currency varchar(4) not null,
+    bill_discount_amount int, 
+    bill_discount_currency varchar(4) not null, 
     CONSTRAINT fk_payments_orders FOREIGN KEY (order_id) REFERENCES orders (id),
     CONSTRAINT fk_payments_clients FOREIGN KEY (client_id) REFERENCES clients (id)
 );

@@ -1,12 +1,15 @@
 class Order {
-    constructor(id, product_id, clientId, placed_on, completedOn, standartPrice, discountPrice){
+    constructor(id, client, product, quantity, placed, completedOn, standartPrice, discountPrice){
+
         this.id = id
-        this.product_id = product_id /* */
-        this.clientId = clientId     /* */
-        this.placed_on = placed_on
+        this.client = client     
+        this.product = product 
+        this.quantity = quantity 
+        this.placed = placed
         this.completedOn = completedOn 
         this.standartPrice = standartPrice
         this.discountPrice = discountPrice 
+
     }
 }
 
