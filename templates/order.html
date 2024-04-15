@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Order page</h1>
-    <form action="/order-confirm" method="post">
+    <form action="/payment" method="Post">
         <hr>
         <label>Your full name
             <input name = 'fullName' type="text">
@@ -21,8 +21,15 @@
             <input name = 'phone' type="text">
         </label>
         <hr>
+        <label>Quantity
+            <input name = 'quantity' type="number">
+        </label>
+        <hr>
+        <input type="hidden" name = 'product_id' value = '(% PRODUCT_ID %)'>
+
+        <hr>
         <button>Order</button>
+
     </form>
-    <hr>
 </body>
 </html>
